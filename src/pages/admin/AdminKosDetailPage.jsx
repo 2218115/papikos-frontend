@@ -1,6 +1,8 @@
 import React from "react";
 
 const AdminKosDetailPage = () => {
+
+
     return (
         <div className="bg-white rounded-xl shadow-sm p-6 w-full">
             <nav className="flex text-sm mb-8 text-gray-500">

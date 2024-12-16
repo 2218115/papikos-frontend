@@ -12,7 +12,6 @@ import AdminKosPage from './pages/admin/AdminKosPage.jsx'
 import AdminKosDetailPage from './pages/admin/AdminKosDetailPage.jsx'
 import AdminTambahKosPage from './pages/admin/AdminTambahKos.jsx'
 
-
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
     <Routes>

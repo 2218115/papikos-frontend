@@ -1,6 +1,6 @@
-import React, { useState, useRef, useLayoutEffect } from "react";
+import React, { useState, useRef, useLayoutEffect, useEffect } from "react";
 
-const DropDown = ({ label, options, placeholder = "Select an option" }) => {
+const DropDown = ({ label, options, placeholder = "Select an option" , onChange, className}) => {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedOption, setSelectedOption] = useState(null);
     const [dropdownWidth, setDropdownWidth] = useState(0);
@@ -9,6 +9,7 @@ const DropDown = ({ label, options, placeholder = "Select an option" }) => {
     const handleSelect = (option) => {
         setSelectedOption(option);
         setIsOpen(false);
+        onChange?.(option.key);
     };
 
     useLayoutEffect(() => {
@@ -17,9 +18,23 @@ const DropDown = ({ label, options, placeholder = "Select an option" }) => {
         }
     }, [isOpen]);
 
+    const first = useRef(true);
+
+    useEffect(() => {
+        if (first.current) {
+            if (options[0]) {
+                setSelectedOption(options[0]);
+            }
+            first.current = false;
+        }
+    }, [options]);
+
     return (
-        <div className="w-full mb-4 flex flex-col">
-            <label className="text-xs mb-2 text-gray-500">{label}</label>
+        <div className={`w-full mb-4 flex flex-col ${className}`}>
+            {
+                label &&
+                    <label className="text-xs mb-2 text-gray-500">{label}</label>
+            }
 
             <div className="relative w-full" ref={parentRef}>
                 {/* Select Box */}
@@ -28,7 +43,7 @@ const DropDown = ({ label, options, placeholder = "Select an option" }) => {
                     onClick={() => setIsOpen((prev) => !prev)}
                 >
                     <span className={selectedOption ? "text-gray-800" : "text-gray-400"}>
-                        {selectedOption || placeholder}
+                        {selectedOption?.label || placeholder}
                     </span>
                     <svg
                         className={`w-4 h-4 text-gray-500 transition-transform ${isOpen ? "rotate-180" : "rotate-0"
@@ -60,7 +75,7 @@ const DropDown = ({ label, options, placeholder = "Select an option" }) => {
                                 className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-700 text-sm"
                                 onClick={() => handleSelect(option)}
                             >
-                                {option}
+                                {option.label}
                             </li>
                         ))}
                     </ul>

@@ -1,5 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Pagination from "../user/components/Pagination";
+import { debounce, kosStatusToBadgeColor, stringLimit, useAction } from "../../lib/helper";
+import axios from "axios";
+import { BASE_API_URL } from "../../lib/config";
+import DropDown from "../../components/DropDown";
 
 const Table = React.forwardRef(({ className, ...props }, ref) => (
     <div className="relative w-full overflow-auto">
@@ -71,28 +75,69 @@ const TableCaption = React.forwardRef(({ className, ...props }, ref) => (
 ));
 TableCaption.displayName = "TableCaption";
 
-
-
-
 const AdminKosPage = () => {
-    const data = [
-        { id: 1, name: "Kos Meruya", owner: "John Doe", price: "$300", status: "Available" },
-        { id: 2, name: "Kos Kembangan", owner: "Jane Smith", price: "$250", status: "Occupied" },
-        { id: 3, name: "Kos Palmerah", owner: "Alice Brown", price: "$200", status: "Available" },
-    ];
+    const [status, setStatus] = useState("");
+    const [search, setSearch] = useState("");
+    const [statusFilter, setStatusFilter] = useState([]);
+    const [totalPage, setTotalPage] = useState(1);
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const getKos = useAction({
+        fn: async (query) => {
+            const result = await axios.get(`${BASE_API_URL}/kos?page=${query.page}&search=${query.search}&status_id=${query.status}`);
+            return result;
+        },
+        placeholder: {
+            data: [],
+        },
+        onSuccess: (data) => {
+            setTotalPage(data.data.data.last_page);
+            setStatusFilter(data.data.status_filter.map(v => ({key: v.id, label: v.nama})));
+        }
+    });
+
+    useEffect(() => {
+        getKos.execute({
+            page: currentPage,
+            search: search,
+            status: status,
+        });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentPage, search, status]);
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    }  
+
+    const handleSearch = debounce((value) => {
+        setSearch(value);
+    }, 500);
+
+    const handleChangeStatus = (key) => {
+        setStatus(key);
+    }
 
     return (
-        <div className="">
-            <div className="flex justify-between">
-                <div>
-                    <input
-                        type="text"
-                        placeholder="Cari tempat, nama kos"
-                        className="rounded-lg px-5 py-3 w-full md:w-96 outline-none bg-gray-200 transition text-xs focus:ring-blue-500 focus:ring-1"
-                    />
+        <div>
+            <div className="flex justify-between space-x-2">
+                <div className="flex space-x-2 w-1/2">
+                    <div className="">
+                        <input
+                        onChange={(e) => {
+                            handleSearch(e.target.value);
+                        }}
+                            type="text"
+                            placeholder="Cari tempat, nama kos"
+                            className="rounded-lg px-5 py-3 w-full md:w-96 outline-none bg-gray-200 transition text-xs focus:ring-blue-500 focus:ring-1"
+                            />
+                    </div>
+                    <DropDown options={[{key: "", label: "Semua"}, ...statusFilter]} placeholder="Pilih Tipe Kos" onChange={handleChangeStatus}/>
                 </div>
 
-                <a href="/admin/kos/tambah" className="bg-blue-500 text-white px-8 py-2 text-sm rounded-md mt-4 md:mt-0 hover:bg-blue-600 transition shadow-md shadow-blue-200 mb-4 cursor-pointer">
+                <a
+                    href="/admin/kos/tambah"
+                    className="bg-blue-500 text-white px-8 py-2 text-sm rounded-md mt-4 md:mt-0 hover:bg-blue-600 transition shadow-md shadow-blue-200 mb-4 cursor-pointer"
+                >
                     Tambah Data Kos
                 </a>
             </div>
@@ -100,40 +145,76 @@ const AdminKosPage = () => {
             <Table className="bg-white rounded-lg shadow-lg">
                 <TableHeader>
                     <TableRow>
-                        <TableHead>ID</TableHead>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Owner</TableHead>
-                        <TableHead>Price</TableHead>
+                        <TableHead>No</TableHead>
+                        <TableHead>Nama</TableHead>
+                        <TableHead>Pemilik</TableHead>
+                        <TableHead>Lokasi</TableHead>
+                        <TableHead>Tipe</TableHead>
+                        <TableHead>Harga</TableHead>
                         <TableHead>Status</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {data.map((row, index) => (
-                        <TableRow key={row.id} onClick={() => {
-                            window.location.assign(`/admin/kos/${row.id}`);
-                        }}>
-                            <TableCell>{row.id}</TableCell>
-                            <TableCell>{row.name}</TableCell>
-                            <TableCell>{row.owner}</TableCell>
-                            <TableCell>{row.price}</TableCell>
-                            <TableCell>
-                                <span
-                                    className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${row.status === "Available"
-                                        ? "bg-green-100 text-green-800"
-                                        : "bg-red-100 text-red-800"
-                                        }`}
-                                >
-                                    {row.status}
-                                </span>
-                            </TableCell>
-                        </TableRow>
-                    ))}
+                    {getKos.isLoading ? (
+                        <tr>
+                            <td colSpan="7" className="text-center w-full">
+                                <div className="animate-pulse flex p-2">
+                                        <div className="h-12 bg-gray-300 rounded w-full"></div>
+                                </div>
+                                <div className="animate-pulse flex p-2">
+                                        <div className="h-12 bg-gray-300 rounded w-full"></div>
+                                </div>
+                                <div className="animate-pulse flex p-2">
+                                        <div className="h-12 bg-gray-300 rounded w-full"></div>
+                                </div>
+                                <div className="animate-pulse flex p-2">
+                                        <div className="h-12 bg-gray-300 rounded w-full"></div>
+                                </div>
+                                <div className="animate-pulse flex p-2">
+                                        <div className="h-12 bg-gray-300 rounded w-full"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    ) : getKos.data.data.length === 0 ? (
+                        <tr>
+                            <td colSpan="7" className="text-center py-4 text-gray-500">
+                                Belum ada data kos di sini
+                            </td>
+                        </tr>
+                    ) : (
+                        getKos.data.data.map((row, index) => (
+                            <TableRow
+                                key={row.id}
+                                onClick={() => {
+                                    window.location.assign(`/admin/kos/${row.id}`);
+                                }}
+                            >
+                                <TableCell>{index + 1}</TableCell>
+                                <TableCell>{row.nama}</TableCell>
+                                <TableCell>{row.pemilik.name}</TableCell>
+                                <TableCell>{stringLimit(row.lokasi_kos, 50)}</TableCell>
+                                <TableCell>{row.tipe_kos.nama}</TableCell>
+                                <TableCell>{`${row.harga_kos}/${row.minimal_sewa}`}</TableCell>
+                                <TableCell>
+                                    <span
+                                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${kosStatusToBadgeColor(
+                                            row.current_status.status.id
+                                        )}`}
+                                    >
+                                        {row.current_status.status.nama}
+                                    </span>
+                                </TableCell>
+                            </TableRow>
+                        ))
+                    )}
                 </TableBody>
             </Table>
 
-            <Pagination currentPage={1} totalPages={10} />
+            {!getKos.isLoading && getKos.data.data.length > 0 && (
+                <Pagination currentPage={currentPage} totalPages={totalPage} onPageChange={handlePageChange} />
+            )}
         </div>
     );
-}
+};
 
 export default AdminKosPage;
