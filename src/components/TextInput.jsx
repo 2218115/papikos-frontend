@@ -13,11 +13,10 @@ const TextInput = ({
     className = '',
     ...props
 }) => {
-    const baseStyles = `rounded-lg px-5 py-3 w-full md:w-96 outline-none transition text-xs focus:ring-1`;
+    const baseStyles = `rounded-lg px-5 py-3 w-full  outline-none transition text-xs focus:ring-1`;
     const errorStyles = `border border-red-500 focus:ring-red-500`;
-    const normalStyles = `bg-gray-200 focus:ring-blue-500`;
+    const normalStyles = `border-zinc-200 border focus:ring-blue-500`;
     const disabledStyles = `bg-gray-100 cursor-not-allowed opacity-50`;
-
     return (
         <div className={`flex flex-col mb-4 ${className}`}>
             {label && <label className="text-sm mb-2 text-gray-500">{label}</label>}

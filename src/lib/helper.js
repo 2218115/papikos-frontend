@@ -29,6 +29,10 @@ const dataUriToBlob = (dataURI) => {
 };
 
 const getSession = () => {
+  if (!localStorage.getItem("session")) {
+    window.location.replace(`/login?redirect=${window.location.href}`);
+    return null;
+  }
   return JSON.parse(localStorage.getItem("session"));
 };
 
