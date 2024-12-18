@@ -12,6 +12,9 @@ import AdminKosPage from "./pages/admin/AdminKosPage.jsx";
 import AdminKosDetailPage from "./pages/admin/AdminKosDetailPage.jsx";
 import AdminTambahKosPage from "./pages/admin/AdminTambahKos.jsx";
 import AdminUserInfoPage from "./pages/admin/AdminUserInfo.jsx";
+import PemilikKosLayout from "./pages/pemilik-kos/PemilikKosLayout.jsx";
+import PemilikKosDashboardPage from "./pages/pemilik-kos/PemilikKosDashboardPage.jsx";
+import PemilikKosRegisterPage from "./pages/pemilik-kos/PemilikKosRegisterPage.jsx";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
@@ -20,6 +23,7 @@ createRoot(document.getElementById("root")).render(
       <Route path="/login" element={<UserLoginPage />} />
       <Route path="/register" element={<UserRegisterPage />} />
       <Route path="/kos/:id" element={<UserKosDetailPage />} />
+      <Route path="/pemilik-kos/register" element={<PemilikKosRegisterPage />} />
 
       <Route path="/admin">
         <Route element={<AdminLayout />}>
@@ -30,6 +34,12 @@ createRoot(document.getElementById("root")).render(
 
           {/**User Info */}
           <Route path="user-info" element={<AdminUserInfoPage />} />
+        </Route>
+      </Route>
+
+      <Route path="pemilik-kos">
+        <Route element={<PemilikKosLayout />}>
+          <Route index element={<PemilikKosDashboardPage />} />
         </Route>
       </Route>
     </Routes>

@@ -18,7 +18,6 @@ const UserKostListPage = () => {
 
     const getKos = useAction({
         fn: async (page) => {
-            const session = getSession();
             const result = await axios.get(`${BASE_API_URL}/kos?page=${page}`);
             return result;
         },

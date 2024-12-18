@@ -20,6 +20,10 @@ const Header = () => {
         onSuccess: () => {
             localStorage.removeItem('session');
             window.location.reload();
+        },
+        onError: () => {
+            localStorage.removeItem('session');
+            window.location.reload();
         }
     })
 
