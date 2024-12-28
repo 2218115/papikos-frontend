@@ -15,6 +15,9 @@ import AdminUserInfoPage from "./pages/admin/AdminUserInfo.jsx";
 import PemilikKosLayout from "./pages/pemilik-kos/PemilikKosLayout.jsx";
 import PemilikKosDashboardPage from "./pages/pemilik-kos/PemilikKosDashboardPage.jsx";
 import PemilikKosRegisterPage from "./pages/pemilik-kos/PemilikKosRegisterPage.jsx";
+import PemilikKosPage from "./pages/pemilik-kos/kos/PemilikKosKosPage.jsx";
+import PemilikKosTambahKosPage from "./pages/pemilik-kos/kos/PemilikKosTambahKosPage.jsx";
+import PemilikKosKosDetailPage from "./pages/pemilik-kos/kos/PemilikKosKosDetailPage.jsx";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
@@ -40,6 +43,9 @@ createRoot(document.getElementById("root")).render(
       <Route path="pemilik-kos">
         <Route element={<PemilikKosLayout />}>
           <Route index element={<PemilikKosDashboardPage />} />
+          <Route path="kos" element={<PemilikKosPage />} />
+          <Route path="kos/tambah" element={<PemilikKosTambahKosPage />} />
+          <Route path="kos/:id" element={<PemilikKosKosDetailPage />} />
         </Route>
       </Route>
     </Routes>

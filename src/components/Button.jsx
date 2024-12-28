@@ -19,6 +19,9 @@ const Button = ({
         primary: 'bg-blue-500 text-white hover:bg-blue-600',
         secondary: 'bg-gray-500 text-white hover:bg-gray-600',
         danger: 'bg-red-500 text-white hover:bg-red-600',
+        outlinedPrimary: 'bg-transparent border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white',
+        outlinedSecondary: 'bg-transparent border border-gray-500 text-gray-500 hover:bg-gray-500 hover:text-white',
+        outlinedDanger: 'bg-transparent border border-red-500 text-red-500 hover:bg-red-500 hover:text-white',
     };
 
     const disabledStyles = 'opacity-50 cursor-not-allowed';
@@ -52,7 +55,14 @@ const Button = ({
 
 Button.propTypes = {
     children: PropTypes.node.isRequired,
-    variant: PropTypes.oneOf(['primary', 'secondary', 'danger']),
+    variant: PropTypes.oneOf([
+        'primary',
+        'secondary',
+        'danger',
+        'outlinedPrimary',
+        'outlinedSecondary',
+        'outlinedDanger'
+    ]),
     isLoading: PropTypes.bool,
     disabled: PropTypes.bool,
     onClick: PropTypes.func,

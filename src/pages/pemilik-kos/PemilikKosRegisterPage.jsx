@@ -4,17 +4,22 @@ import { NavLink } from "react-router";
 import { BASE_API_URL } from "../../lib/config";
 import Button from "../../components/Button";
 import TextInput from "../../components/TextInput";
-import FileInput from "../../components/FileInput";
-import { useAction } from "../../lib/helper";
+import { fileToDataUrl, useAction } from "../../lib/helper";
+import PhotoInput from "../../components/PhotoInput";
 
 const PemilikKosRegisterPage = () => {
+    const [fotoUri, setFotoUri] = useState(null);
+    const [fotoUriAvatar, setFotoUriAvatar] = useState(null);
+
     const [data, setData] = useState({
         nama: "",
         email: "",
         password: "",
         password_confirmation: "",
         alamat: "",
+        no_wa: "",
         foto_identitas: null,
+        avatar: null,
     });
 
     const register = useAction({
@@ -23,7 +28,7 @@ const PemilikKosRegisterPage = () => {
             Object.keys(params).forEach((key) => {
                 formData.append(key, params[key]);
             });
-            const result = await axios.post(BASE_API_URL + "/auth/register-owner", formData, {
+            const result = await axios.post(BASE_API_URL + "/auth/register/pemilik-kos", formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
             return result;
@@ -42,9 +47,9 @@ const PemilikKosRegisterPage = () => {
 
     return (
         <div>
-            <main className="flex items-center justify-center h-screen">
+            <main className="flex items-center justify-center min-h-screen">
                 <form
-                    className="flex flex-col p-8 border border-gray-200 rounded-xl w-full md:w-3/4 lg:w-1/2"
+                    className="flex flex-col p-8 w-full md:w-3/4 lg:w-1/2"
                     onSubmit={handleSubmit}
                 >
                     <h1 className="font-bold text-lg mb-12 text-center">
@@ -52,11 +57,14 @@ const PemilikKosRegisterPage = () => {
                     </h1>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <FileInput
+                            <PhotoInput
+                                id={"foto_identitas"}
                                 label="Foto Identitas"
-                                onChange={(e) =>
-                                    setData({ ...data, foto_identitas: e.target.files[0] })
-                                }
+                                src={fotoUri}
+                                onChange={async (e) => {
+                                    setFotoUri(await fileToDataUrl(e.target.files));
+                                    setData({ ...data, foto_identitas: e.target.files[0] });
+                                }}
                                 isError={register.isFieldError("foto_identitas")}
                                 errorHint={register.getError("foto_identitas")}
                                 className="w-full"
@@ -84,6 +92,19 @@ const PemilikKosRegisterPage = () => {
                         </div>
 
                         <div>
+                            <PhotoInput
+                                id={"foto_profile"}
+                                label="Foto Profile"
+                                src={fotoUriAvatar}
+                                onChange={async (e) => {
+                                    setFotoUriAvatar(await fileToDataUrl(e.target.files));
+                                    setData({ ...data, avatar: e.target.files[0] });
+                                }}
+                                isError={register.isFieldError("avatar")}
+                                errorHint={register.getError("avatar")}
+                                className="w-full"
+                            />
+
                             <TextInput
                                 label="Katasandi"
                                 value={data.password}
@@ -115,6 +136,17 @@ const PemilikKosRegisterPage = () => {
                                 isError={register.isFieldError("alamat")}
                                 errorHint={register.getError("alamat")}
                                 placeholder="Masukkan Alamat"
+                                className="w-full"
+                            />
+
+
+                            <TextInput
+                                label="No Wa"
+                                value={data.no_wa}
+                                onChange={(e) => setData({ ...data, no_wa: e.target.value })}
+                                isError={register.isFieldError("no_wa")}
+                                errorHint={register.getError("no_wa")}
+                                placeholder="Masukkan Nomor Whatsapp Anda"
                                 className="w-full"
                             />
                         </div>

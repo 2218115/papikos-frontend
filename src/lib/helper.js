@@ -76,12 +76,15 @@ const useAction = ({ fn, onSuccess, onError, placeholder }) => {
         }
         setIsSuccess(true);
       } catch (e) {
+        console.error("ERROR", e);
         try {
           onError?.(e.response);
         } catch (i) {
-          console.error("ONEROR", i);
+          console.error("ERROR [ONEROR] 😭", i);
         }
-        setError(e.response.data.errors);
+        if (e.response?.data?.errors) {
+          setError(e.response.data.errors);
+        }
       } finally {
         setIsLoading(false);
       }

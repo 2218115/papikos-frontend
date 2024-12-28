@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Pagination from "../user/components/Pagination";
 import { debounce, kosStatusToBadgeColor, stringLimit, useAction } from "../../lib/helper";
 import axios from "axios";
@@ -92,7 +92,7 @@ const AdminKosPage = () => {
         },
         onSuccess: (data) => {
             setTotalPage(data.data.data.last_page);
-            setStatusFilter(data.data.status_filter.map(v => ({key: v.id, label: v.nama})));
+            setStatusFilter(data.data.status_filter.map(v => ({ key: v.id, label: v.nama })));
         }
     });
 
@@ -102,12 +102,12 @@ const AdminKosPage = () => {
             search: search,
             status: status,
         });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentPage, search, status]);
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
-    }  
+    }
 
     const handleSearch = debounce((value) => {
         setSearch(value);
@@ -123,15 +123,15 @@ const AdminKosPage = () => {
                 <div className="flex space-x-2 w-1/2">
                     <div className="">
                         <input
-                        onChange={(e) => {
-                            handleSearch(e.target.value);
-                        }}
+                            onChange={(e) => {
+                                handleSearch(e.target.value);
+                            }}
                             type="text"
                             placeholder="Cari tempat, nama kos"
                             className="rounded-lg px-5 py-3 w-full md:w-96 outline-none bg-gray-200 transition text-xs focus:ring-blue-500 focus:ring-1"
-                            />
+                        />
                     </div>
-                    <DropDown options={[{key: "", label: "Semua"}, ...statusFilter]} placeholder="Pilih Tipe Kos" onChange={handleChangeStatus}/>
+                    <DropDown options={[{ key: "", label: "Semua" }, ...statusFilter]} placeholder="Pilih Tipe Kos" onChange={handleChangeStatus} />
                 </div>
 
                 <a
@@ -159,19 +159,19 @@ const AdminKosPage = () => {
                         <tr>
                             <td colSpan="7" className="text-center w-full">
                                 <div className="animate-pulse flex p-2">
-                                        <div className="h-12 bg-gray-300 rounded w-full"></div>
+                                    <div className="h-12 bg-gray-300 rounded w-full"></div>
                                 </div>
                                 <div className="animate-pulse flex p-2">
-                                        <div className="h-12 bg-gray-300 rounded w-full"></div>
+                                    <div className="h-12 bg-gray-300 rounded w-full"></div>
                                 </div>
                                 <div className="animate-pulse flex p-2">
-                                        <div className="h-12 bg-gray-300 rounded w-full"></div>
+                                    <div className="h-12 bg-gray-300 rounded w-full"></div>
                                 </div>
                                 <div className="animate-pulse flex p-2">
-                                        <div className="h-12 bg-gray-300 rounded w-full"></div>
+                                    <div className="h-12 bg-gray-300 rounded w-full"></div>
                                 </div>
                                 <div className="animate-pulse flex p-2">
-                                        <div className="h-12 bg-gray-300 rounded w-full"></div>
+                                    <div className="h-12 bg-gray-300 rounded w-full"></div>
                                 </div>
                             </td>
                         </tr>

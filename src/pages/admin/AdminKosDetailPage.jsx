@@ -1,12 +1,72 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useParams } from "react-router";
-import { kosStatusToBadgeColor, useAction } from "../../lib/helper";
+import { getSession, kosStatusToBadgeColor, useAction } from "../../lib/helper";
 import axios from "axios";
 import { BASE_API_URL } from "../../lib/config";
 import ImageCarousel from "../../components/Carousel";
+import Modal from "../../components/Modal";
+import Button from "../../components/Button";
+import TextInput from "../../components/TextInput";
+import Editor from "../../components/Editor";
 
 const AdminKosDetailPage = () => {
   const { id } = useParams(); // Retrieve `id_kos` from URL params
+
+  const postSuspendKos = useAction({
+    fn: async ({ catatan }) => {
+      const response = await axios.post(`${BASE_API_URL}/kos/${id}/suspend`, {
+        catatan: catatan,
+      }, {
+        headers: {
+          Authorization: `Bearer ${getSession().token}`,
+        },
+      });
+      return response;
+    },
+    onSuccess: () => {
+      window.location.replace(`/admin/kos/${id}`);
+    },
+    onError: () => {
+
+    }
+  });
+
+  const postRejectKos = useAction({
+    fn: async ({ catatan }) => {
+      const response = await axios.post(`${BASE_API_URL}/kos/${id}/reject`, {
+        catatan: catatan,
+      }, {
+        headers: {
+          Authorization: `Bearer ${getSession().token}`,
+        },
+      });
+      return response;
+    },
+    onSuccess: () => {
+      window.location.replace(`/admin/kos/${id}`);
+    },
+    onError: () => {
+
+    }
+  });
+
+  const postApproveDataKos = useAction({
+    fn: async () => {
+      const response = await axios.post(`${BASE_API_URL}/kos/${id}/approve`, {}, {
+        headers: {
+          Authorization: `Bearer ${getSession().token}`,
+        },
+      });
+      console.info(response.data);
+      return response;
+    },
+    onSuccess: () => {
+      window.location.replace(`/admin/kos/${id}`);
+    },
+    onError: () => {
+
+    }
+  });
 
   const getKosDetail = useAction({
     fn: async () => {
@@ -22,6 +82,8 @@ const AdminKosDetailPage = () => {
   useEffect(() => {
     getKosDetail.execute();
   }, [id]);
+
+  const catatanQuillRef = useRef();
 
   const kosDetail = getKosDetail.data;
 
@@ -66,7 +128,7 @@ const AdminKosDetailPage = () => {
               <>
                 <li className="px-4 py-4 border-gray-200 border rounded-lg bg-white hover:bg-gray-50">
                   <p className="text-gray-800 text-xs mb-2 font-bold">#323</p>
-                  <p className="text-gray-800 text-sm mb-2">{h.catatan}</p>
+                  <div className="text-gray-800 text-sm mb-2" dangerouslySetInnerHTML={{ __html: h.catatan }}></div>
                   <p className="text-gray-500 text-xs">
                     {new Date(h.created_at).toLocaleString()}
                   </p>
@@ -78,15 +140,60 @@ const AdminKosDetailPage = () => {
 
         <div className="w-1/2 p-4 flex flex-col">
           <p className="text-xs mb-3 text-gray-500">Aksi Admin</p>
-          <button className="bg-blue-500 text-white px-8 py-2 rounded-md mt-4 md:mt-0 hover:bg-blue-600 transition shadow-md shadow-blue-200 mb-4">
-            Approve Data Kos
-          </button>
+          <Modal
+            id={"approve_modal"}
+            className="w-full"
+            trigger={
+              <Button disabled={kosDetail.current_status.status.id == 2} variant="primary" className="mb-4 w-full">Approve Data Kos</Button>
+            }>
+            <p className="font-bold mt-4 mb-2">Appove data Kos</p>
+            <p className="text-zinc-500 text-sm mb-4">aksi ini akan membuat data kos tersedia secara publik</p>
+            <div className="flex gap-2">
+              <Button variant="primary" isLoading={postApproveDataKos.isLoading} className="mb-4 w-full" onClick={async () => {
+                postApproveDataKos.execute();
+              }}>Approve</Button>
+            </div>
+          </Modal>
 
-          <button className="bg-red-500 text-white px-8 py-2 rounded-md mt-4 md:mt-0 hover:bg-red-600 transition shadow-md shadow-red-200">
-            Reject Data Kos
-          </button>
+
+          <Modal
+            id={"reject_modal"}
+            className="w-full"
+            trigger={
+              <Button disabled={kosDetail.current_status.status.id == 3 || kosDetail.current_status.status.id == 2} variant="danger" className="mb-4 w-full">Reject Data Kos</Button>
+            }>
+            <p className="font-bold mt-4 mb-2">Reject data Kos</p>
+            <p className="text-zinc-500 text-sm mb-4">aksi ini akan membuat data kos tidak tersedia secara publik, sekaligus memberikan informasi pada pengguna tentang alasan kenapa data kos di lakukan reject.</p>
+            <Editor label="Catatan" ref={catatanQuillRef} isError={postRejectKos.isFieldError("catatan")} errorHint={postRejectKos.getError("catatan")} />
+            <div className="flex gap-2">
+              <Button variant="danger" isLoading={postRejectKos.isLoading} className="mb-4 w-full" onClick={async () => {
+
+                postRejectKos.execute({
+                  catatan: catatanQuillRef.current.getSemanticHTML(),
+                });
+              }}>Reject</Button>
+            </div>
+          </Modal>
+
+          <Modal
+            id={"reject_modal"}
+            className="w-full"
+            trigger={
+              <Button disabled={kosDetail.current_status.status.id == 4} variant="secondary" className="mb-4 w-full">Tangguhkan Data Kos</Button>
+            }>
+            <p className="font-bold mt-4 mb-2">Tangguhkan data Kos</p>
+            <p className="text-zinc-500 text-sm mb-4">aksi ini akan membuat data kos tidak tersedia secara publik, sekaligus memberikan informasi pada pengguna tentang alasan kenapa data kos di lakukan suspend.</p>
+            <Editor label="Catatan" ref={catatanQuillRef} isError={postSuspendKos.isFieldError("catatan")} errorHint={postSuspendKos.getError("catatan")} />
+            <div className="flex gap-2">
+              <Button variant="secondary" isLoading={postSuspendKos.isLoading} className="mb-4 w-full" onClick={async () => {
+                postSuspendKos.execute({
+                  catatan: catatanQuillRef.current.getSemanticHTML(),
+                });
+              }}>Tangguhkan</Button>
+            </div>
+          </Modal>
         </div>
-      </div>
+      </div >
 
       <div className="mb-6">
         <ImageCarousel fotos={kosDetail.fotos} />
@@ -175,17 +282,14 @@ const AdminKosDetailPage = () => {
         </div>
       </div>
 
-      <div className="relative w-full h-64 bg-gray-300 rounded-lg overflow-hidden">
-        <iframe
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7902.714580762124!2d112.6033753658386!3d-7.961978843823585!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e78828a75addd11%3A0xba4ad47a7f3adbc7!2sCharis%20National%20Academy!5e0!3m2!1sen!2sid!4v1734119785376!5m2!1sen!2sid"
-          className="border-0 w-full"
-          height={400}
-          allowFullScreen=""
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-        ></iframe>
+      <div className="bg-white rounded-lg mb-4">
+        <h3 className="text-lg font-bold mb-4">Lokasi</h3>
+        <div
+          className="w-full h-72bg-gray-300 rounded-lg overflow-hidden flex items-center justify-center"
+          dangerouslySetInnerHTML={{ __html: kosDetail?.embed_gmaps.replace(/width="\d+"/, 'width="1920"').replace(/height="\d+"/, 'height="400"') || "" }}
+        />
       </div>
-    </div>
+    </div >
   );
 };
 
