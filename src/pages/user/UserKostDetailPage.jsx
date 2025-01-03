@@ -5,6 +5,7 @@ import { useAction } from "../../lib/helper"; // Assuming you have a custom `use
 import Header from "./components/Header";
 import { BASE_API_URL, BASE_URL } from "../../lib/config";
 import ImageCarousel from "../../components/Carousel";
+import Button from "../../components/Button";
 
 
 const UserKosDetailPage = () => {
@@ -64,9 +65,11 @@ const UserKosDetailPage = () => {
                     <p className="text-gray-600 mb-4">
                         <strong>Harga:</strong> Rp {kosDetail?.harga_kos.toLocaleString() || "0"} / bulan
                     </p>
-                    <button className="bg-green-500 text-white px-4 py-2 rounded w-full">
-                        Pesan Sekarang
-                    </button>
+                    <a href={`/kos/${id}/booking`} >
+                        <Button variant="primary" className="w-full">
+                            Pesan Sekarang
+                        </Button>
+                    </a>
                 </div>
 
                 {/* Fasilitas */}

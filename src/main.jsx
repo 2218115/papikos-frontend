@@ -18,6 +18,8 @@ import PemilikKosRegisterPage from "./pages/pemilik-kos/PemilikKosRegisterPage.j
 import PemilikKosPage from "./pages/pemilik-kos/kos/PemilikKosKosPage.jsx";
 import PemilikKosTambahKosPage from "./pages/pemilik-kos/kos/PemilikKosTambahKosPage.jsx";
 import PemilikKosKosDetailPage from "./pages/pemilik-kos/kos/PemilikKosKosDetailPage.jsx";
+import UserKosBookingPage from "./pages/user/booking/UserKosBookingPage.jsx";
+import UserBookingListPage from "./pages/user/booking/UserBookingListPage.jsx";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
@@ -27,6 +29,8 @@ createRoot(document.getElementById("root")).render(
       <Route path="/register" element={<UserRegisterPage />} />
       <Route path="/kos/:id" element={<UserKosDetailPage />} />
       <Route path="/pemilik-kos/register" element={<PemilikKosRegisterPage />} />
+      <Route path="/kos/:id/booking" element={<UserKosBookingPage />} />
+      <Route path="/booking" element={<UserBookingListPage />} />
 
       <Route path="/admin">
         <Route element={<AdminLayout />}>

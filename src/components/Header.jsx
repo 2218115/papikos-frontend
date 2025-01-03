@@ -1,9 +1,9 @@
 import { NavLink } from "react-router";
 import IonIcon from "@reacticons/ionicons";
-import Button from "../../../components/Button";
+import Button from "./Button";
 import axios from "axios";
-import { BASE_API_URL } from "../../../lib/config";
-import { getSession, useAction } from "../../../lib/helper";
+import { BASE_API_URL } from "../lib/config";
+import { getSession, useAction } from "../lib/helper";
 
 const Header = () => {
     const loggedUser = JSON.parse(localStorage.getItem('session'));

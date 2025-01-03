@@ -29,12 +29,9 @@ const UserKostListPage = () => {
         },
     });
 
-
     useEffect(() => {
         getKos.execute(currentPage);
     }, []);
-
-    console.log(getKos.data);
 
     return (
         <div className="">
