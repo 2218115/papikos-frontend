@@ -3,15 +3,14 @@ import axios from "axios";
 import { BASE_API_URL } from "../../../lib/config";
 import TextInput from "../../../components/TextInput";
 import Button from "../../../components/Button";
-import DropDown from "../../../components/DropDown";
 import Toast from "../../../components/Toast";
 import IonIcon from "@reacticons/ionicons";
 import { useParams } from "react-router";
 import KosCard from "./KosCard";
-import { useAction } from "../../../lib/helper";
+import { dateToInputDate, getSession, useAction } from "../../../lib/helper";
 
 const BookingKosPage = () => {
-    const { id } = useParams(); // Retrieve `id_kos` from URL params
+    const { id } = useParams();
 
     const getKosDetail = useAction({
         fn: async () => {
@@ -24,59 +23,62 @@ const BookingKosPage = () => {
         },
     });
 
+    const postBookingKos = useAction({
+        fn: async (data) => {
+            const result = axios.post(BASE_API_URL + '/booking', data, {
+                headers: {
+                    Authorization: 'Bearer ' + getSession().token,
+                }
+            });
+            return result;
+        },
+        onSuccess: () => {
+            window.location.assign('/');
+        },
+        onError: () => {
+            setErrorToast("Gagal melakukan booking kos.");
+        }
+    });
+
     useEffect(() => {
         getKosDetail.execute();
     }, [id]);
 
     const [errorToast, setErrorToast] = useState("");
+
     const [data, setData] = useState({
-        nama: "",
-        tipe_kos: null,
-        tanggal_masuk: "",
-        durasi_sewa: "",
-        kontak_pemesan: "",
+        tanggal_awal: new Date(),
+        durasi: 0,
+        catatan: "",
+        tanggal_berakhir: new Date(),
     });
-
-    const [tipeKosOptions, setTipeKosOptions] = useState([]);
-
-    useEffect(() => {
-        const fetchTipeKos = async () => {
-            try {
-                const response = await axios.get(`${BASE_API_URL}/kos/tipe`, {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                });
-                setTipeKosOptions(response.data);
-            } catch (error) {
-                console.error("Error fetching tipe kos", error);
-                setErrorToast("Gagal memuat tipe kos.");
-            }
-        };
-
-        fetchTipeKos();
-    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        try {
-            await axios.post(
-                `${BASE_API_URL}/kos/booking`,
-                {
-                    ...data,
-                },
-                {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                }
-            );
-            alert("Booking berhasil!");
-        } catch (error) {
-            console.error("Error during booking", error);
-            setErrorToast("Gagal melakukan booking kos.");
-        }
+        postBookingKos.execute(data);
     };
+
+    const handleChangeDurasi = (e) => {
+        const new_durasi = e.target.value;
+        const tanggal_awal = structuredClone(data.tanggal_awal);
+
+        tanggal_awal.setMonth(tanggal_awal.getMonth() + new_durasi)
+        const tanggal_berakhir = tanggal_awal;
+
+        setData({ ...data, durasi: new_durasi, tanggal_berakhir: tanggal_berakhir });
+    }
+
+    const handleChangeTanggalAwal = (e) => {
+        setTanggalAwal(e.target.value);
+        const new_tanggal_awal = structuredClone(new Date(e.target.value));
+        const durasi = data.durasi;
+        new_tanggal_awal.setMonth(new_tanggal_awal.getMonth() + durasi)
+        const tanggal_berakhir = new_tanggal_awal;
+
+        setData({ ...data, tanggal_berakhir: tanggal_berakhir, tanggal_awal: new_tanggal_awal });
+    }
+
+    const [valueTanggalAwal, setTanggalAwal] = useState("");
 
     return (
         <div className="bg-white p-6 rounded-lg shadow-md">
@@ -100,40 +102,41 @@ const BookingKosPage = () => {
 
             <form onSubmit={handleSubmit} className="space-y-4">
                 <TextInput
-                    label="Nama Pemesan"
-                    placeholder="Masukkan nama Anda"
-                    value={data.nama}
-                    onChange={(e) => setData({ ...data, nama: e.target.value })}
-                />
-
-                {/* <DropDown
-                    label="Tipe Kos"
-                    options={tipeKosOptions.map((tipe) => ({ key: tipe.id, label: tipe.nama }))}
-                    placeholder="Pilih tipe kos"
-                    value={data.tipe_kos}
-                    onChange={(value) => setData({ ...data, tipe_kos: value })}
-                /> */}
-
-                <TextInput
-                    label="Tanggal Masuk"
-                    placeholder="YYYY-MM-DD"
-                    value={data.tanggal_masuk}
-                    onChange={(e) => setData({ ...data, tanggal_masuk: e.target.value })}
+                    label="Tanggal Awal"
+                    placeholder="Masukkan Tanggal Awal"
+                    value={valueTanggalAwal}
+                    onChange={handleChangeTanggalAwal}
+                    type="date"
+                    isError={postBookingKos.isFieldError("tanggal_awal")}
+                    errorHint={postBookingKos.getError("tanggal_awal")}
                 />
 
                 <TextInput
-                    label="Durasi Sewa (bulan)"
-                    placeholder="Masukkan durasi sewa"
-                    value={data.durasi_sewa}
-                    onChange={(e) => setData({ ...data, durasi_sewa: e.target.value })}
+                    label="Durasi Sewa"
+                    placeholder="Masukkan Durasi Sewa"
+                    value={data.durasi}
+                    onChange={handleChangeDurasi}
+                    isError={postBookingKos.isFieldError("durasi")}
+                    errorHint={postBookingKos.getError("durasi")}
                 />
 
                 <TextInput
-                    label="Kontak Pemesan"
-                    placeholder="Masukkan nomor telepon"
-                    value={data.kontak_pemesan}
-                    onChange={(e) => setData({ ...data, kontak_pemesan: e.target.value })}
+                    label="Tanggal Berakhir"
+                    placeholder="Masukkan Tanggal Berakhir"
+                    value={dateToInputDate(data.tanggal_berakhir)}
+                    disabled
+                // onChange={(e) => setData({ ...data, durasi_sewa: e.target.value })}
                 />
+
+                <TextInput
+                    label="Catatan"
+                    placeholder="Masukkan Catatan"
+                    value={data.catatan}
+                    onChange={(e) => setData({ ...data, catatan: e.target.value })}
+                    isError={postBookingKos.isFieldError("catatan")}
+                    errorHint={postBookingKos.getError("catatan")}
+                />
+
 
                 <Button type="submit" className="w-full">
                     Booking Sekarang

@@ -3,7 +3,7 @@ import Header from '../../../components/Header';
 import Pagination from '../../../components/Pagination';
 import BookingCard from './components/BookingCard'; // Komponen untuk menampilkan informasi booking
 import BookingCardSkeleton from './components/BookingCardSkeleton';
-import { useAction } from '../../../lib/helper';
+import { getSession, useAction } from '../../../lib/helper';
 import axios from 'axios';
 import { BASE_API_URL } from '../../../lib/config';
 
@@ -18,7 +18,11 @@ const UserBookingListPage = () => {
 
     const getBookings = useAction({
         fn: async (page) => {
-            const result = await axios.get(`${BASE_API_URL}/user/bookings?page=${page}`);
+            const result = await axios.get(`${BASE_API_URL}/booking?page=${page}`, {
+                headers: {
+                    Authorization: `Bearer ${getSession().token}`,
+                },
+            });
             return result;
         },
         onSuccess: (data) => {
@@ -33,12 +37,14 @@ const UserBookingListPage = () => {
         getBookings.execute(currentPage);
     }, []);
 
+    console.log(getBookings.data);
+
     return (
         <div>
             <Header />
             <main className="p-4 mx-12">
                 <h1 className="text-2xl font-bold mb-6 mt-32">Daftar Booking Anda</h1>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
+                <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 gap-12">
                     {getBookings.isLoading
                         ? Array.from({ length: 6 }).map((_, index) => (
                             <BookingCardSkeleton key={index} />

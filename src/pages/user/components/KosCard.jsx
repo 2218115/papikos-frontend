@@ -4,7 +4,6 @@ import { BASE_URL } from "../../../lib/config";
 const KosCard = ({ data }) => {
     const navigate = useNavigate();
 
-    // Get the first photo path or use a default placeholder image
     const imagePath = data.fotos.length > 0
         ? `${BASE_URL}/foto_kos/${data.fotos[0].path}`
         : "https://placehold.co/600x400";

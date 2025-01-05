@@ -123,6 +123,17 @@ const stringLimit = (str, max) => {
   return str;
 };
 
+/**
+ * 
+ * @param {Date} date 
+ * @returns 
+ */
+
+const dateToInputDate = (date) => {
+  const result = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}-${(date.getDate() + 1).toString().padStart(2, "0")}`;
+  return result;
+}
+
 export {
   fileToDataUrl,
   dataUriToBlob,
@@ -131,4 +142,5 @@ export {
   kosStatusToBadgeColor,
   stringLimit,
   debounce,
+  dateToInputDate,
 };

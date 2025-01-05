@@ -113,7 +113,8 @@ const UserKosDetailPage = () => {
                                         <p className="font-bold text-sm">{ulasan.rating}</p>
                                     </div>
                                 </div>
-                                <p className="mt-4 text-sm text-gray-900">{ulasan.ulasan}</p>
+                                <div className="mt-4 text-sm text-gray-900" dangerouslySetInnerHTML={{ __html: ulasan.ulasan }}>
+                                </div>
 
                                 {/* Balasan */}
                                 {ulasan.balasan?.length > 0 && (
@@ -132,9 +133,8 @@ const UserKosDetailPage = () => {
                                                         </p>
                                                     </div>
                                                 </div>
-                                                <p className="mt-4 text-sm text-gray-900">
-                                                    {balasan.ulasan}
-                                                </p>
+                                                <div className="mt-4 text-sm text-gray-900" dangerouslySetInnerHTML={{ __html: ulasan.ulasan }}>
+                                                </div>
                                             </div>
                                         ))}
                                     </div>

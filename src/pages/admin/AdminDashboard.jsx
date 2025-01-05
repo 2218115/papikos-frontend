@@ -6,7 +6,6 @@ import { useEffect } from "react";
 const AdminDashboard = () => {
   const getAnalitikData = useAction({
     fn: async () => {
-      console.log(getSession().token);
       const result = await axios.get(BASE_API_URL + "/kos/analitik", {
         headers: {
           Authorization: `Bearer ${getSession().token}`,
