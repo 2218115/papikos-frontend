@@ -25,7 +25,7 @@ const UserRegisterPage = () => {
       localStorage.setItem("session", JSON.stringify(data.data));
       window.location.replace("/");
     },
-    onError: (error) => {},
+    onError: (error) => { },
   });
 
   const handleSubmit = (e) => {
@@ -104,6 +104,17 @@ const UserRegisterPage = () => {
               </NavLink>
             </p>
           </div>
+
+          <div className="mt-4">
+            <p className="text-sm text-gray-500">
+              Daftar sebagai Pemilik Kos?{" "}
+              <NavLink className="text-blue-500 font-bold" to="/pemilik-kos/register">
+                Daftar Pemilik
+              </NavLink>
+            </p>
+          </div>
+
+
         </form>
       </main>
     </div>

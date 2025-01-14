@@ -9,6 +9,8 @@ import axios from 'axios';
 import Toast from '../../../../components/Toast';
 
 const KosBookingCard = ({ data }) => {
+    console.info('data', data);
+
     const [errorToast, setErrorToast] = useState("");
     const [ulasanData, setUlasanData] = useState({ ulasan: "", rating: "1", id_kos: data.kos.id });
     const ulasanQuillRef = useRef();
@@ -25,6 +27,24 @@ const KosBookingCard = ({ data }) => {
         },
         onSuccess: (data) => {
             window.location.replace("/booking");
+        },
+        onError: (data) => {
+            console.info("ERROR", data);
+            setErrorToast(data.data.message);
+        },
+    });
+
+    const postCancelBooking = useAction({
+        fn: async (id) => {
+            const result = await axios.post(BASE_API_URL + "/booking/cancel/" + id, {}, {
+                headers: {
+                    Authorization: `Bearer ${getSession().token}`,
+                },
+            });
+            return result;
+        },
+        onSuccess: (data) => {
+            window.location.reload();
         },
         onError: (data) => {
             console.info("ERROR", data);
@@ -81,11 +101,15 @@ const KosBookingCard = ({ data }) => {
                 <div className="italic">{data.catatan}</div>
             </div>
 
+            <a href={`https://api.whatsapp.com/send?phone=${data.kos.narahubung_kos}`} target='_blank'>
+                <Button disabled={false} variant="primary" className="w-full mt-4">Kontak Pemilik</Button>
+            </a>
+
             <Modal
                 id={"approve_modal"}
                 className="w-full mt-4"
                 trigger={
-                    <Button disabled={false} variant="primary" className="mb-4 w-full">Berikan Ulasan</Button>
+                    <Button disabled={data.status.id !== 4} variant="secondary" className="mb-4 w-full">Berikan Ulasan</Button>
                 }>
                 <p className="font-bold mt-4 mb-2">Berikan Ulasan</p>
                 <p className="text-zinc-500 text-sm mb-4">aksi ini akan memberikan ulasan pada kos</p>
@@ -95,11 +119,12 @@ const KosBookingCard = ({ data }) => {
                 }} />
 
                 <div className="flex gap-2">
-                    <Button variant="primary" isLoading={postUlasanKos.isLoading} className="mb-4 w-full" onClick={async () => {
+                    <Button disabled={data.status.id !== 4} variant="primary" isLoading={postUlasanKos.isLoading} className="mb-4 w-full" onClick={async () => {
                         postUlasanKos.execute({ ...ulasanData, id_kos: data.kos.id, ulasan: ulasanQuillRef.current.getSemanticHTML() });
                     }}>Posting Ulasan</Button>
                 </div>
             </Modal>
+            <Button disabled={data.status.id !== 1} isLoading={postCancelBooking.isLoading} variant="outlinedDanger" className="mb-4 w-full" onClick={() => { postCancelBooking.execute(data.id); }}>Batalkan Booking</Button>
         </div>
     );
 };

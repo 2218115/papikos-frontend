@@ -116,6 +116,19 @@ const kosStatusToBadgeColor = (status) => {
   }
 };
 
+const bookingStatusToBageColor = (status) => {
+  if (status == 1) {
+    return "bg-zinc-100 text-zinc-800";
+  } else if (status == 2 || status == 5) {
+    return "bg-red-100 text-red-800";
+  } else if (status == 3) {
+    return "bg-blue-100 text-blue-800";
+  } else {
+    return "bg-green-100 text-green-800";
+  }
+};
+
+
 const stringLimit = (str, max) => {
   if (str.length > max) {
     return str.substring(0, max) + "....";
@@ -143,4 +156,5 @@ export {
   stringLimit,
   debounce,
   dateToInputDate,
+  bookingStatusToBageColor,
 };

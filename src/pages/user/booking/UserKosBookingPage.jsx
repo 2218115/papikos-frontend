@@ -51,6 +51,7 @@ const BookingKosPage = () => {
         durasi: 0,
         catatan: "",
         tanggal_berakhir: new Date(),
+        id_kos: id,
     });
 
     const handleSubmit = async (e) => {
@@ -81,7 +82,7 @@ const BookingKosPage = () => {
     const [valueTanggalAwal, setTanggalAwal] = useState("");
 
     return (
-        <div className="bg-white p-6 rounded-lg shadow-md">
+        <div className="bg-white p-6 rounded-lg shadow-md max-w-6xl mx-auto">
             <div className="flex gap-4 items-center mb-5">
                 <a href={`/kos/${id}`} className="p-4 hover:bg-blue-500 flex justify-center items-center hover:text-white text-black duration-300 rounded-xl cursor-pointer">
                     <IonIcon name="arrow-back" className="font-medium" />
@@ -136,7 +137,6 @@ const BookingKosPage = () => {
                     isError={postBookingKos.isFieldError("catatan")}
                     errorHint={postBookingKos.getError("catatan")}
                 />
-
 
                 <Button type="submit" className="w-full">
                     Booking Sekarang

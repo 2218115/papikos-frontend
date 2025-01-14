@@ -1,4 +1,3 @@
-import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import { BrowserRouter, Route, Routes } from "react-router";
@@ -20,6 +19,7 @@ import PemilikKosTambahKosPage from "./pages/pemilik-kos/kos/PemilikKosTambahKos
 import PemilikKosKosDetailPage from "./pages/pemilik-kos/kos/PemilikKosKosDetailPage.jsx";
 import UserKosBookingPage from "./pages/user/booking/UserKosBookingPage.jsx";
 import UserBookingListPage from "./pages/user/booking/UserBookingListPage.jsx";
+import PemilikKosBookingPage from "./pages/pemilik-kos/booking/PemilikKosBookingPage.jsx";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
@@ -50,6 +50,8 @@ createRoot(document.getElementById("root")).render(
           <Route path="kos" element={<PemilikKosPage />} />
           <Route path="kos/tambah" element={<PemilikKosTambahKosPage />} />
           <Route path="kos/:id" element={<PemilikKosKosDetailPage />} />
+
+          <Route path="booking" element={<PemilikKosBookingPage />} />
         </Route>
       </Route>
     </Routes>

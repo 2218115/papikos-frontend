@@ -98,7 +98,7 @@ const PemilikKosLayout = ({ children }) => {
                         </ul>
                     </nav>
 
-                    <nav className="mt-4">
+                    {/* <nav className="mt-4">
                         <ul
                             className={
                                 isSidebarOpen
@@ -116,7 +116,7 @@ const PemilikKosLayout = ({ children }) => {
                                 </a>
                             </li>
                         </ul>
-                    </nav>
+                    </nav> */}
 
                     <nav className="mt-4">
                         <ul

@@ -37,8 +37,6 @@ const UserBookingListPage = () => {
         getBookings.execute(currentPage);
     }, []);
 
-    console.log(getBookings.data);
-
     return (
         <div>
             <Header />

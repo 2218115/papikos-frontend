@@ -78,10 +78,13 @@ const Header = () => {
                     <li className='text-gray-500 text-sm flex gap-2 items-center cursor-pointer hover:text-blue-500'>Kos Laki laki <IonIcon name='chevron-down' /></li>
                 </ul>
 
-                <a href="/booking" className="text-blue-500 rounded-full relative group">
-                    Booking Saya
-                    <div className="w-full h-1 bg-blue-500 absolute bottom-0 left-0 scale-x-0 group-hover:scale-x-100 duration-300 origin-left"></div>
-                </a>
+                {
+                    loggedUser?.user?.role == 'USER' &&
+                    <a href="/booking" className="text-blue-500 rounded-full relative group">
+                        Booking Saya
+                        <div className="w-full h-1 bg-blue-500 absolute bottom-0 left-0 scale-x-0 group-hover:scale-x-100 duration-300 origin-left"></div>
+                    </a>
+                }
             </div>
         </header>
     );

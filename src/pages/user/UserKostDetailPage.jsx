@@ -11,6 +11,8 @@ import Button from "../../components/Button";
 const UserKosDetailPage = () => {
     const { id } = useParams(); // Retrieve `id_kos` from URL params
 
+    const loggedUser = JSON.parse(localStorage.getItem('session'));
+
     const getKosDetail = useAction({
         fn: async () => {
             const response = await axios.get(`${BASE_API_URL}/kos/${id}`);
@@ -65,11 +67,15 @@ const UserKosDetailPage = () => {
                     <p className="text-gray-600 mb-4">
                         <strong>Harga:</strong> Rp {kosDetail?.harga_kos.toLocaleString() || "0"} / bulan
                     </p>
-                    <a href={`/kos/${id}/booking`} >
-                        <Button variant="primary" className="w-full">
-                            Pesan Sekarang
-                        </Button>
-                    </a>
+                    {
+                        loggedUser.user.role === 'USER' &&
+                        <a href={`/kos/${id}/booking`} >
+
+                            <Button variant="primary" className="w-full">
+                                Pesan Sekarang
+                            </Button>
+                        </a>
+                    }
                 </div>
 
                 {/* Fasilitas */}
